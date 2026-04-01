@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaf it to Hydrogen</title>
+
+<style>
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui;
+  margin: 0;
+  background: #f5f7f9;
+  color: #222;
+}
+
+/* ===== HEADER ===== */
+.top-header {
+  background: linear-gradient(135deg, #0b2c4a, #144d7a);
+  color: white;
+  padding: 30px 20px 40px 80px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.top-header h1 {
+  margin: 0;
+  font-size: 2.6em;
+  letter-spacing: 1px;
+}
+h4 {
+  font-size: 0.95em;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: #333;
+}
+.top-header p {
+  margin-top: 10px;
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+/* OPEN BUTTON (☰) */
+#openBtn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid white;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  z-index: 2000;
+}
+
+#openBtn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* CLOSE BUTTON (✕) */
+#closeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  height: 100%;
+  width: 260px;
+  position: fixed;
+  left: -260px;
+  top: 0;
+  background: #0b2c4a;
+  padding-top: 60px;
+  transition: 0.3s;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* MAIN LINKS */
+.sidebar > a:not(.sub-link) {
+  display: block;
+  color: white;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* SUB LINKS */
+.sub-link {
+  display: block;
+  color: white;
+  padding-left: 50px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
+  opacity: 0.8;
+  text-decoration: none;
+  position: relative;
+}
+
+.sub-link::before {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: rgba(255,255,255,0.2);
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ===== OVERLAY ===== */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+  z-index: 900;
+}
+
+/* ===== MAIN ===== */
+.main {
+  max-width: 850px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+/* HEADINGS */
+h2 {
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 1.8em;
+  margin-top: 40px;
+}
+
+h3 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* WORD BOX */
+.word-box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.word-box:hover {
+  transform: scale(1.03);
+}
+.figure {
+  display: inline-block;   /* 🔥 key */
+  text-align: center;
+  margin: 15px auto;
+}
+
+.figure img {
+  display: block;
+  margin: auto;
+}
+/* IMAGES */
+img {
+  width: 100%;
+}
+.center-img {
+  display: block;
+  margin: 10px auto;
+}
+/* ROW */
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.row img {
+  width: 48%;
+}
+
+/* VIDEO */
+.video {
+  width: 100%;
+  height: 300px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* FOOTER */
+footer {
+  margin-top: 60px;
+  padding: 20px;
+  background: #0b2c4a;
+  color: white;
+  text-align: center;
+}
+.project-video {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.video-wrapper iframe,
+.video-wrapper video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: contain;
+background: black; /* keeps it clean */
+}
+
+
+</style>
+</head>
+
+<body>
+
+<!-- OVERLAY -->
+<div id="overlay"></div>
+
+<!-- HEADER -->
+<header class="top-header">
+  <button id="openBtn" onclick="openSidebar()">☰</button>
+
+  <div>
+    <h1>Leaf it to Hydrogen</h1>
+    <p><strong>Green Hydrogen Generators</strong><br>Turning Sunlight into Clean Fuel</p>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+  <button id="closeBtn" onclick="closeSidebar()">✕</button>
+
+  <a href="#purpose">Purpose</a>
+
+  <a href="#proto1">Prototype 1</a>
+  <a class="sub-link" href="#p1idea">Idea</a>
+  <a class="sub-link" href="#p1procedure">Procedure</a>
+  <a class="sub-link" href="#p1results">Results</a>
+
+  <a href="#proto2">Prototype 2</a>
+  <a class="sub-link" href="#p2idea">Idea</a>
+  <a class="sub-link" href="#p2procedure">Procedure</a>
+  <a class="sub-link" href="#p2results">Results</a>
+
+  <a href="#conclusion">Conclusion</a>
+  <a href="#harvard">Harvard's Design</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<h2 id="purpose">Purpose</h2>
+<p>The purpose of my experiment is to explore the benefits of green hydrogen as a clean and renewable energy source that can power vehicles, generate electricity, and store excess renewable energy. Unlike hydrogen made from fossil fuels, green hydrogen produces no carbon emissions, making it a sustainable alternative that supports global efforts to reduce pollution and fight climate change.</p>
+
+<div class="word-box">
+  <img src="hydrogen-types.png">
+  <img src="RAW_4X1D_HYDROGEN_INFOGRAPHIC_4X1D_V2.webp">
+  <p>Electrolysis only accounts for about 0.3% of global hydrogen production, and only a small fraction
+of that is truly green hydrogen powered by renewable energy.
+</p>
+</div>
+
+<h3>Electrolysis</h3>
+<p>Traditional electrolysis uses electricity to split water into hydrogen and oxygen inside a tank filled with a liquid alkaline electrolyte, usually potassium hydroxide (KOH). Two electrodes sit in this solution: when current flows, water molecules break apart, producing hydrogen gas at the cathode and oxygen gas at the anode. The alkaline solution helps carry ions between the electrodes and reduces electrical resistance. This method is widely used in green hydrogen production because it’s simple, durable, and relatively inexpensive, but I decided to make something different. Something that is faster and more efficient…</p>
+
+<h2 id="proto1">Prototype 1</h2>
+
+<div class="word-box">
+  <img src="Artificial leaf.jpg">
+  <p>Artificial leaf</p>
+</div>
+
+<h3 id="p1idea">Idea</h3>
+<p>My artificial leaf was built as a photoelectrochemical water splitting device, and the diagram shows how each layer worked together to mimic the basic function of natural photosynthesis. At the top of the structure is a sheet of FTO glass, which is transparent and conductive so that ultraviolet light can pass through while also collecting the electrons generated in the semiconductor. Beneath it is a thin layer of titanium dioxide (TiO₂), the main light absorbing material in the design. When UV light strikes the TiO₂, it creates electron–hole pairs, which ideally drive the water splitting reactions. To help the oxygen producing side of the reaction, a cobalt oxide (CoOₓ) catalyst layer sits directly under the TiO₂, speeding up the oxygen evolution reaction. A small water gap allows oxygen bubbles to escape without interfering with the rest of the system. In the center of the device is a proton exchange membrane (PEM), which lets protons travel through while keeping hydrogen and oxygen separated. On the opposite side, a piece of nickel foam coated with MoS₂ acts as the hydrogen evolution catalyst, where electrons and protons combine to form hydrogen gas. Altogether, this layered structure was designed to absorb UV light, separate charges, and split water into hydrogen and oxygen in a controlled, leaf like way.</p>
+
+<h3 id="p1procedure">Procedure</h3>
+<h4>Day 1- Coat Titanium Dioxide (TiO₂) on FTO Glass:</h4>
+<p>1. Prepare FTO Glass by putting conductive side face up, and then tape the edges, leaving one big edge exposed.</p>
+<div class="word-box">
+  <div class="row">
+  <img src="IMG_3497.jpeg">
+  <img src="IMG_3498.jpeg">
+  </div>
+</div>
+<p>2. Prepare Titanium Dioxide Paste, which is a solution of 1-gram TiO₂ nanopowder(Preferably anatase or P25), 1mL 2% acetic acid (diluted vinegar works), 1 small drop clear glue, 1 small drop Triton X-100. This is all carefully grinded.
+3. Drop a bit of paste on the top edge of the glass and take a separate glass to press down at the top and then swipe down in one clean motion to evenly spread the paste evenly across. This is called doctor-blading, and the tape layers act as support and control the thickness.
+</p>
+<div class="word-box">
+  <img src="Screenshot 2026-03-31 223658.jpeg" style="max-width: 400px;" class="center-img">
+</div>
+<p>4. Put the glass into the kiln after leaving it to dry for 15 minutes and taking the tape off. The heating cycle is:
+Ramp 300°C/hr up to 125°C, stay for 10 minutes
+Ramp 240°C/hr up to 375°C, stay for 20 minutes
+Ramp 180°C/hr up to 475°C, stay for 60 minutes
+</p>
+<div class="word-box">
+  <img src="PHOTO-2026-03-29-12-24-25.jpg" style="max-width: 600px;" class="center-img">
+</div>
+<h4>Day 2- Coat Cobalt Oxide on Titanium Dioxide:</h4>
+<p>1. Prepare the Cobalt Oxide suspension by putting 80mg of Cobalt Oxide nanopowder in a small plastic bottle and add 20 mL of 99% isopropyl alcohol (IPA). Now, shake vigorously for 20 minutes.</p>
+<div class="word-box">
+  <img src="IMG_3683.jpeg" style="max-width: 400px;" class="center-img">
+</div>
+<p>2. Drop the solution on the edge of the TiO₂ film and tilt to spread evenly. Leave to dry for 1 hour.</p>
+<div class="word-box">
+  <img src="IMG_3534 (1).jpeg" style="max-width: 500px;" class="center-img">
+</div>
+<p>3. Time to put it in the kiln again. The cycle this time is:
+Ramp 180°C/hr up to 120°C, stay for 10 minutes
+Ramp 240°C/hr up to 375°C, stay for 20 minutes
+Ramp 180°C/hr up to 450°C, stay for 60 minutes
+</p>
+<h4>Day 3- Deposit Molybdenum Disulfide (MoS2) on Nickel Foam:</h4>
+<p>1. Prepare the MoS2 solution by putting 100mg of MoS2 in a large container, along with 90 mL 99% IPA, 5 small drops of clear glue, and a few tiny crystals of Potassium Iodide (KI). After stirring well, pour solution into smaller container.
+2. Connect a negative and positive wire clip to 2 nickel foam electrodes(50x60mm), and then put both electrodes in the liquid, a few centimeters apart to make sure they don’t touch or attract. Then, connect the clips to a DC power source and turn up the voltage to 20 V, keeping it like that for 5-10 minutes. The MoS2 particles have been given a positive surface charge by the KI and will be attracted to the negative electrode. This is called Electrophoretic Deposition (EPD). Wrap the negative foam in aluminum foil after taking it out of the solution and leaving to dry for 1 hour. Foil is to prevent oxidization.
+</p>
+<div class="word-box">
+  <img src="IMG_3550.jpeg">
+</div>
+<p>3. Kiln time! Put the wrapped nickel foam in the kiln. The program is:
+Ramp 180°C/hr up to 80°C, stay for 10 minutes
+Ramp 200°C/hr up to 310°C, stay for 50 minutes
+After cool-down, make sure to take off foil.
+</p>
+<h4>Day 4- 3D printing, Assembly, and Testing:</h4>
+<p>1. Test the current and voltage of the TiO₂ film coating on the FTO glass, by putting it into a solution of baking soda and water for conductivity. Next, connect the glass to the positive end of a multimeter, and the negative end of the multimeter is connected to a counter electrode (I used scrap nickel foam). Compare voltage and current from before you turn on the UV lamp 10 cm next to the glass and after you turn it on, the difference is the voltage and current (measure separately).</p>
+<div class="word-box">
+  <div class="row">
+    <img src="IMG_3649.jpeg">
+    <img src="IMG_3680.jpg">
+    <p>Measuring the Voltage</p>
+  </div>
+</div>
+  <p>2. Assemble final “leaf” in this order: front frame, cut-out silicone spacer, FTO glass (coatings on top), PEM (pre-hydrated in water and baking soda, and then rinsed off before use), trimmed Nickel foam, and finally, the back frame. Tie it together in the holes of the frame and then use binder clips of the sides.</p>
+<div class="word-box">
+    <img src="Screenshot 2026-03-31 225712.jpeg" style="max-width: 500px;" class="center-img">
+    <img src="Screenshot 2026-03-31 225933.jpeg" style="max-width: 300px;" class="center-img">
+</div>
+<p>3. Connect positive wires, connected to the DC source, to the glass, and connect the negative clip to nickel foam. Put it in a container of distilled water and turn on both the UV lamp (10 cm away), and the DC power source (set to 2 V). Add funnel at the end, which will lead to the 10 mL graduated cylinder.</p>
+<div class="word-box">
+  <div class="row">
+    <img src="PHOTO-2026-03-29-12-27-55.jpg">
+    <img src="IMG_3672.jpeg">
+    <p>Bubbles coming out from leave&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;Leaf and funnel together</p>
+</div>
+</div>
+
+<div class="word-box">
+  <p><strong>Artificial Leaf Producing Hydrogen:</strong></p>
+
+  <div class="video-wrapper">
+    <video controls>
+      <source src="IMG_3667.mp4" type="video/mp4">
+    </video>
+  </div>
+
+</div>
+
+<h3 id="p1results">Results</h3>
+<p>Though you can clearly see bubbles forming, there were many problems in my experiment which prevented the leaf from being more efficient or successful. During testing, the artificial leaf produced a very small but consistent photocurrent of about 0.8 μA and a voltage of roughly 0.0291 V, resulting in only 1.4 × 10⁻⁵ J of electrical energy over ten minutes. Although small bubbles were visible on the nickel foam side of the device, the hydrogen they represented could not be measured because it escaped directly from the open electrode surface rather than entering the gas collection tube. As a result, every trial recorded 0 mL of collected hydrogen, even though gas formation was observed. To estimate an upper bound on performance, I assumed a maximum possible production of 1 mL of hydrogen, which corresponds to about 11.9 J of chemical energy and an approximate efficiency of ~4% relative to the light energy input. Overall, the artificial leaf operated consistently but produced such low electrical output and such dispersed gas release that its hydrogen production could not be quantified using my setup.</p>
+
+<h2 id="proto2">Prototype 2</h2>
+
+<div class="word-box">
+  <img src="energies-13-06556-g001.png">
+  <p>How a PEM electrolyzer works
+    <br>
+    Credit: MDPI
+  </p>
+</div>
+
+<h3 id="p2idea">Idea</h3>
+<p>The PEM electrolyzer in my setup was a compact water splitting device powered by the solar panel, which provided a strong and stable electrical source, something the artificial leaf could not achieve on its own. As shown in the diagram, water entered on the anode side, where it contacted a commercial oxygen evolution catalyst layer, such as iridium oxide (IrO₂), which is engineered to split water far more efficiently than the untreated TiO₂ surface in my leaf. At this electrode, water molecules were converted into oxygen gas, electrons, and protons. The electrons traveled through the external circuit from the solar panel, while the protons moved through the proton exchange membrane (PEM) in the center of the cell. The PEM allowed only protons to pass, keeping the gases separated and preventing recombination. On the cathode side, the protons met the incoming electrons at another optimized catalyst layer, often platinum in commercial systems, where they combined to form hydrogen gas that exited through the hydrogen outlet. Flow channels and diffusion layers on both sides helped distribute water and gases evenly across the catalysts.</p>
+
+<h3 id="p2procedure">Procedure</h3>
+<p>1. The PEM electrolyzer is connected to a 5W solar panel, using a stripped USB wire. The red wire is connected to the positive terminal, the black to the negative.
+<br>
+  2. Connect a valve to the top of the hydrogen output, which then is connected to a tube, leading to a fuel cell, which converts the hydrogen into electricity by itself, doing essentially the opposite that was done to split water, combing oxygen and hydrogen to form water.
+<br>
+3. The fuel cell should be connected to a multimeter, measuring voltage and current. This then leads to a small fan that the electricity from the fuel cell will power.
+<br>
+4. Put UV lamp directly on top of the solar panel and turn it on for 10 minutes.
+<br>
+5. Measure voltage and current produced by the solar panel using the multimeter every minute, and a starting measure at 0 minutes.
+</p>
+<div class="word-box">
+  <img src="IMG_3590.jpeg">
+</div>
+<div class="word-box">
+  <p><strong>PEM Electrolyzer Setup Running:</strong></p>
+
+  <div class="video-wrapper">
+   <iframe src="https://drive.google.com/file/d/1mZQNR9cZ6cavxNcr21wp_Zi2FY9QMqrH/preview" width="640" height="480"></iframe>
+  </div>
+
+</div>
+
+<h3 id="p2results">Results</h3>
+<p>During the PEM electrolyzer trials, the solar panel delivered enough power for the cell to consistently produce measurable hydrogen. Over each ten minute run, the voltage ranged from about 7–9 V, fluctuating slightly as the panel warmed up under the lamp, while the current stayed between 30–80 mA. These values resulted in a total electrical input of about 247 J. The electrolyzer produced 1.6 mL of hydrogen in the gas collection tube, which corresponded to 19.1 J of chemical energy stored in the hydrogen. Using these measurements, the final electricity to hydrogen efficiency of the PEM system was calculated to be approximately 7.7%. Overall, the PEM electrolyzer operated reliably throughout all trials, with stable gas production and clear numerical data that allowed its performance to be quantified accurately.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>Overall, the clear winner in my experiment was the solar panel powered PEM electrolyzer, which consistently produced measurable hydrogen and operated with an electricity to hydrogen efficiency of about 7.7%. It outperformed the TiO₂ artificial leaf because it had a strong and stable power source, optimized commercial catalysts, and effective gas separation, while the artificial leaf generated extremely low photocurrents and released hydrogen in a way that could not be captured or measured. Although both systems functioned, only the PEM setup produced reliable numerical data and meaningful hydrogen output. There were several important sources of error in this project. Because the entire experiment was built at home rather than in a controlled laboratory, many components had to be improvised, including the gas collection system, wiring, and electrode mounting. The artificial leaf in particular suffered from limitations caused by homemade construction, uneven coatings, and the open geometry that allowed hydrogen bubbles to escape before entering the collection tube. Heat from the lamp also caused the solar panel voltage to fluctuate over time, which affected the exact power delivered to the PEM. These factors introduced uncertainty into the measurements, but they also reflect the challenges of building complex electrochemical devices outside of professional equipment. Even with these limitations, the experiment demonstrates how promising green hydrogen technologies can be when supported by proper engineering. PEM electrolyzers are already being used in clean energy projects around the world, and artificial leaf research continues to push toward sunlight driven hydrogen production. Understanding what worked and what failed in my designs helps show what future improvements are needed and reminds us that solving climate and energy challenges will come from continued innovation, curiosity, and hands on experimentation.</p>
+<h2 id="harvard">Harvard’s Design (Bionic Leaf)</h2>
+<div class="word-box">
+  <img src="Screenshot 2026-03-31 223524.jpeg" style="max-width: 400px;" class="center-img">
+  <p>Credits: BBC Studios, Harvard University</p>
+</div>
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube-nocookie.com/embed/2KRlRhNbxKg?si=zesnjY_wE-5P6xym" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+<footer>© 2026 Science Project</footer>
+
+</div>
+
+<script>
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+
+function openSidebar() {
+  sidebar.style.left = "0px";
+  overlay.style.opacity = "1";
+  overlay.style.pointerEvents = "auto";
+}
+
+function closeSidebar() {
+  sidebar.style.left = "-260px";
+  overlay.style.opacity = "0";
+  overlay.style.pointerEvents = "none";
+}
+
+/* AUTO CLOSE */
+document.querySelectorAll(".sidebar a").forEach(link => {
+  link.addEventListener("click", closeSidebar);
+});
+
+/* CLICK OUTSIDE CLOSE */
+overlay.addEventListener("click", closeSidebar);
+</script>
+
+</body>
+</html>
